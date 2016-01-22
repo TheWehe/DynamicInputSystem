@@ -21,6 +21,9 @@
     <ClCompile Include="input_mgr.cpp">
       <Filter>Quelldateien</Filter>
     </ClCompile>
+    <ClCompile Include="device_defs.cpp">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="input_mgr.h">
@@ -29,10 +32,10 @@
     <ClInclude Include="input_obj.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
-    <ClInclude Include="keyboard_defs.h">
+    <ClInclude Include="util.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
-    <ClInclude Include="mouse_defs.h">
+    <ClInclude Include="device_defs.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
   </ItemGroup>
