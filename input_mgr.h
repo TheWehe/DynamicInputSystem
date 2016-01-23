@@ -15,7 +15,6 @@ private:
 	struct GamepadData
 	{
 		SDL_Joystick* pHandle;
-
 		std::vector<float> axisStates;
 		std::vector<float> lastAxisStates;
 		std::vector<bool> buttonStates;
@@ -44,8 +43,7 @@ private:
 	bool m_lastMouseButtonStates[MB_COUNT];
 	float m_mouseDeltaX = 0.f, m_mouseDeltaY = 0.f;
 	float m_lastMouseDeltaX = 0.f, m_lastMouseDeltaY = 0.f;
-	float m_mouseWheelDelta = 0.f;
-	float m_lastMouseWheelDelta = 0.f;
+	float m_mouseWheelDelta = 0.f,  m_lastMouseWheelDelta = 0.f;
 	std::list<GamepadData> m_gamepads;
 };
 

@@ -17,13 +17,6 @@ InputMgr::InputMgr()
 		m_mouseButtonStates[i] = false;
 		m_lastMouseButtonStates[i] = false;
 	}
-
-	m_mouseDeltaX = 0.f;
-	m_mouseDeltaY = 0.f;
-	m_lastMouseDeltaX = 0.f;
-	m_lastMouseDeltaY = 0.f;
-	m_mouseWheelDelta = 0.f;
-	m_lastMouseWheelDelta = 0.f;
 }
 
 void InputMgr::Init()
@@ -108,57 +101,63 @@ void InputMgr::OnEvent(const SDL_Event& event)
 		break;
 
 	case SDL_MOUSEWHEEL:
-		m_mouseWheelDelta = (float)event.wheel.y;
+		if (event.wheel.y > 0.f) m_mouseWheelDelta = 1.f;
+		else if (event.wheel.y < 0.f) m_mouseWheelDelta = 1.f;
+		else m_mouseWheelDelta = 0.f;
 		break;
 
 	case SDL_JOYBUTTONDOWN:
 	{
-		auto it = m_gamepads.begin();
-		for (; it != m_gamepads.end(); it++)
+		FOREACH_IT_IN_LIST(m_gamepads)
 		{
-			if (SDL_JoystickFromInstanceID(event.jhat.which) == it->pHandle) break;
+			if (SDL_JoystickFromInstanceID(event.jhat.which) == it->pHandle)
+			{
+				it->buttonStates[event.jbutton.button] = true;
+				break;
+			}
 		}
-
-		it->buttonStates[event.jbutton.button] = true;
 		break;
 	}
 
 	case SDL_JOYBUTTONUP:
 	{
-		auto it = m_gamepads.begin();
-		for (; it != m_gamepads.end(); it++)
+		FOREACH_IT_IN_LIST(m_gamepads)
 		{
-			if (SDL_JoystickFromInstanceID(event.jhat.which) == it->pHandle) break;
+			if (SDL_JoystickFromInstanceID(event.jhat.which) == it->pHandle)
+			{
+				it->buttonStates[event.jbutton.button] = false;
+				break;
+			}
 		}
-
-		it->buttonStates[event.jbutton.button] = false;
 		break;
 	}
 
 	case SDL_JOYAXISMOTION:
 	{
-		auto it = m_gamepads.begin();
-		for (; it != m_gamepads.end(); it++)
+		FOREACH_IT_IN_LIST(m_gamepads)
 		{
-			if (SDL_JoystickFromInstanceID(event.jhat.which) == it->pHandle) break;
+			if (SDL_JoystickFromInstanceID(event.jhat.which) == it->pHandle)
+			{
+				auto state = (float)event.jaxis.value;
+				if (state > 0) state /= GAMEPAD_AXIS_MAX_ABS;
+				if (state < 0) state /= GAMEPAD_AXIS_MIN_ABS;
+				if (event.jaxis.axis < it->axisStates.size()) it->axisStates[event.jaxis.axis] = state;
+				break;
+			}
 		}
-
-		auto state = (float)event.jaxis.value;
-		if (state > 0) state /= GAMEPAD_AXIS_MAX_ABS;
-		if (state < 0) state /= GAMEPAD_AXIS_MIN_ABS;
-		if(event.jaxis.axis < it->axisStates.size()) it->axisStates[event.jaxis.axis] = state; // mein xeox-wireless hat ein event mit dem axis index 4 bekommen obwohl er nur 4 axes hat
 		break;
 	}
 
 	case SDL_JOYHATMOTION:
 	{
-		auto it = m_gamepads.begin();
-		for (; it != m_gamepads.end(); it++)
+		FOREACH_IT_IN_LIST(m_gamepads)
 		{
-			if (SDL_JoystickFromInstanceID(event.jhat.which) == it->pHandle) break;
+			if (SDL_JoystickFromInstanceID(event.jhat.which) == it->pHandle)
+			{
+				TranslateSDLDPadStateToArray(event.jhat.value, &it->dPadStates[event.jhat.hat]);
+				break;
+			}
 		}
-		
-		TranslateSDLDPadStateToArray(event.jhat.value, &it->dPadStates[event.jhat.hat]);
 		break;
 	}
 
@@ -170,14 +169,15 @@ void InputMgr::OnEvent(const SDL_Event& event)
 
 	case SDL_JOYDEVICEREMOVED:
 	{
-		auto it = m_gamepads.begin();
-		for (; it != m_gamepads.end(); it++)
+		FOREACH_IT_IN_LIST(m_gamepads)
 		{
-			if (SDL_JoystickFromInstanceID(event.jhat.which) == it->pHandle) break;
+			if (SDL_JoystickFromInstanceID(event.jhat.which) == it->pHandle)
+			{
+				SDL_JoystickClose(it->pHandle);
+				m_gamepads.erase(it);
+				break;
+			}
 		}
-
-		SDL_JoystickClose(it->pHandle);
-		m_gamepads.erase(it);
 		break;
 	}
 
