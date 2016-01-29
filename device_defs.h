@@ -778,73 +778,75 @@ inline MouseButton SDLToMB(unsigned char sdlmb)
 {
 	return (MouseButton)sdlmb;
 }
-inline void TranslateSDLDPadStateToArray(unsigned char sdl, std::array<bool, 4>* pArray)
+inline void TranslateSDLDPadStateToArray(unsigned char sdl, std::array<bool, 4>& array)
 {
 	switch (sdl)
 	{
 	case SDL_HAT_CENTERED:
-		(*pArray)[DPS_UP] = false;
-		(*pArray)[DPS_RIGHT] = false;
-		(*pArray)[DPS_DOWN] = false;
-		(*pArray)[DPS_LEFT] = false;
+		array[DPS_UP] = false;
+		array[DPS_RIGHT] = false;
+		array[DPS_DOWN] = false;
+		array[DPS_LEFT] = false;
 		break;
 
 	case SDL_HAT_UP:
-		(*pArray)[DPS_UP] = true;
-		(*pArray)[DPS_RIGHT] = false;
-		(*pArray)[DPS_DOWN] = false;
-		(*pArray)[DPS_LEFT] = false;
+		array[DPS_UP] = true;
+		array[DPS_RIGHT] = false;
+		array[DPS_DOWN] = false;
+		array[DPS_LEFT] = false;
 		break;
 
 	case SDL_HAT_RIGHTUP:
-		(*pArray)[DPS_UP] = true;
-		(*pArray)[DPS_RIGHT] = true;
-		(*pArray)[DPS_DOWN] = false;
-		(*pArray)[DPS_LEFT] = false;
+		array[DPS_UP] = true;
+		array[DPS_RIGHT] = true;
+		array[DPS_DOWN] = false;
+		array[DPS_LEFT] = false;
 		break;
 
 	case SDL_HAT_RIGHT:
-		(*pArray)[DPS_UP] = false;
-		(*pArray)[DPS_RIGHT] = true;
-		(*pArray)[DPS_DOWN] = false;
-		(*pArray)[DPS_LEFT] = false;
+		array[DPS_UP] = false;
+		array[DPS_RIGHT] = true;
+		array[DPS_DOWN] = false;
+		array[DPS_LEFT] = false;
 		break;
 
 	case SDL_HAT_RIGHTDOWN:
-		(*pArray)[DPS_UP] = false;
-		(*pArray)[DPS_RIGHT] = true;
-		(*pArray)[DPS_DOWN] = true;
-		(*pArray)[DPS_LEFT] = false;
+		array[DPS_UP] = false;
+		array[DPS_RIGHT] = true;
+		array[DPS_DOWN] = true;
+		array[DPS_LEFT] = false;
 		break;
 
 	case SDL_HAT_DOWN:
-		(*pArray)[DPS_UP] = false;
-		(*pArray)[DPS_RIGHT] = false;
-		(*pArray)[DPS_DOWN] = true;
-		(*pArray)[DPS_LEFT] = false;
+		array[DPS_UP] = false;
+		array[DPS_RIGHT] = false;
+		array[DPS_DOWN] = true;
+		array[DPS_LEFT] = false;
 		break;
 
 	case SDL_HAT_LEFTDOWN:
-		(*pArray)[DPS_UP] = false;
-		(*pArray)[DPS_RIGHT] = false;
-		(*pArray)[DPS_DOWN] = true;
-		(*pArray)[DPS_LEFT] = true;
+		array[DPS_UP] = false;
+		array[DPS_RIGHT] = false;
+		array[DPS_DOWN] = true;
+		array[DPS_LEFT] = true;
 		break;
 
 	case SDL_HAT_LEFT:
-		(*pArray)[DPS_UP] = false;
-		(*pArray)[DPS_RIGHT] = false;
-		(*pArray)[DPS_DOWN] = false;
-		(*pArray)[DPS_LEFT] = true;
+		array[DPS_UP] = false;
+		array[DPS_RIGHT] = false;
+		array[DPS_DOWN] = false;
+		array[DPS_LEFT] = true;
 		break;
 
 	case SDL_HAT_LEFTUP:
-		(*pArray)[DPS_UP] = true;
-		(*pArray)[DPS_RIGHT] = false;
-		(*pArray)[DPS_DOWN] = false;
-		(*pArray)[DPS_LEFT] = true;
+		array[DPS_UP] = true;
+		array[DPS_RIGHT] = false;
+		array[DPS_DOWN] = false;
+		array[DPS_LEFT] = true;
 		break;
 	}
 }
+
+
 
 #endif

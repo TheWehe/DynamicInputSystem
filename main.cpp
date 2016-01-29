@@ -19,15 +19,15 @@ int main(int argCount, char* args[])
 	InputMgr input;
 	input.Init();
 
-	InputObj exitButton(DeviceType::Keyboard, 0, InputType::Button, KB_ESCAPE, Direction::None);
-	InputObj left1(DeviceType::Gamepad, 0, InputType::Axis, 0, Direction::Negative);
-	InputObj right1(DeviceType::Gamepad, 0, InputType::Axis, 0, Direction::Positive);
-	InputObj up1(DeviceType::Gamepad, 0, InputType::Axis, 1, Direction::Negative);
-	InputObj down1(DeviceType::Gamepad, 0, InputType::Axis, 1, Direction::Positive);
-	InputObj left2(DeviceType::Gamepad, 1, InputType::Axis, 0, Direction::Negative);
-	InputObj right2(DeviceType::Gamepad, 1, InputType::Axis, 0, Direction::Positive);
-	InputObj up2(DeviceType::Gamepad, 1, InputType::Axis, 1, Direction::Negative);
-	InputObj down2(DeviceType::Gamepad, 1, InputType::Axis, 1, Direction::Positive);
+	InputObj exitButton = { DeviceType::Keyboard, 0, InputType::Button, KB_ESCAPE, AxisDir::None };
+	InputObj left1 = { DeviceType::Gamepad, 0, InputType::Axis, 0, AxisDir::Negative };
+	InputObj right1 = { DeviceType::Gamepad, 0, InputType::Axis, 0, AxisDir::Positive };
+	InputObj up1 = { DeviceType::Gamepad, 0, InputType::Axis, 1, AxisDir::Negative };
+	InputObj down1 = { DeviceType::Gamepad, 0, InputType::Axis, 1, AxisDir::Positive };
+	InputObj left2 = { DeviceType::Gamepad, 1, InputType::Axis, 0, AxisDir::Negative };
+	InputObj right2 = { DeviceType::Gamepad, 1, InputType::Axis, 0, AxisDir::Positive };
+	InputObj up2 = { DeviceType::Gamepad, 1, InputType::Axis, 1, AxisDir::Negative };
+	InputObj down2 = { DeviceType::Gamepad, 1, InputType::Axis, 1, AxisDir::Positive };
 
 	SDL_Rect player = { 0, 0, 50, 50 };
 	auto player1X = 0.f, player1Y = 0.f;

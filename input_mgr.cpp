@@ -1,28 +1,29 @@
 #include "input_mgr.h"
 
+#include <cmath>
 #include "util.h"
 
 
 
 InputMgr::InputMgr()
 {
-	FOREACH_I_IN_RANGE(0, KB_COUNT)
+	for (int i = 0; i < KB_COUNT; i++)
 	{
-		m_keyboardButtonStates[i] = false;
-		m_lastKeyboardButtonStates[i] = false;
+		m_KeyboardButtonStates[i] = false;
+		m_LastKeyboardButtonStates[i] = false;
 	}
 
-	FOREACH_I_IN_RANGE(0, MB_COUNT)
+	for (int i = 0; i < MB_COUNT; i++)
 	{
-		m_mouseButtonStates[i] = false;
-		m_lastMouseButtonStates[i] = false;
+		m_MouseButtonStates[i] = false;
+		m_LastMouseButtonStates[i] = false;
 	}
 }
 
 void InputMgr::Init()
 {
-	const auto gamepadCount = SDL_NumJoysticks();
-	FOREACH_I_IN_RANGE(0, gamepadCount)
+	const unsigned gamepadCount = SDL_NumJoysticks();
+	for (unsigned i = 0; i < gamepadCount; i++)
 	{
 		InitGamepad(i);
 	}
@@ -30,7 +31,7 @@ void InputMgr::Init()
 
 void InputMgr::Release()
 {
-	FOREACH_IT_IN_LIST(m_gamepads)
+	FOREACH_IT_IN_LIST(m_Gamepads)
 	{
 		SDL_JoystickClose(it->pHandle);
 	}
@@ -38,37 +39,37 @@ void InputMgr::Release()
 
 void InputMgr::OnPreEventLoop()
 {
-	FOREACH_I_IN_RANGE(0, KB_COUNT)
+	for (int i = 0; i < KB_COUNT; i++)
 	{
-		m_lastKeyboardButtonStates[i] = m_keyboardButtonStates[i];
+		m_LastKeyboardButtonStates[i] = m_KeyboardButtonStates[i];
 	}
 
-	FOREACH_I_IN_RANGE(0, MB_COUNT)
+	for (int i = 0; i < MB_COUNT; i++)
 	{
-		m_lastMouseButtonStates[i] = m_mouseButtonStates[i];
+		m_LastMouseButtonStates[i] = m_MouseButtonStates[i];
 	}
 
-	m_lastMouseDeltaX = m_mouseDeltaX;
-	m_mouseDeltaX = 0;
-	m_lastMouseDeltaY = m_mouseDeltaY;
-	m_mouseDeltaY = 0;
+	m_LastMouseDeltaX = m_MouseDeltaX;
+	m_MouseDeltaX = 0;
+	m_LastMouseDeltaY = m_MouseDeltaY;
+	m_MouseDeltaY = 0;
 
-	m_lastMouseWheelDelta = m_mouseWheelDelta;
-	m_mouseWheelDelta = 0;
+	m_LastMouseWheelDelta = m_MouseWheelDelta;
+	m_MouseWheelDelta = 0;
 
-	FOREACH_IT_IN_LIST(m_gamepads)
+	FOREACH_IT_IN_LIST(m_Gamepads)
 	{
-		FOREACH_I_IN_RANGE(0, it->buttonStates.size())
+		for (unsigned i = 0; it->buttonStates.size(); i++)
 		{
 			it->lastButtonStates[i] = it->buttonStates[i];
 		}
 
-		FOREACH_I_IN_RANGE(0, it->axisStates.size())
+		for (unsigned i = 0; it->axisStates.size(); i++)
 		{
 			it->lastAxisStates[i] = it->axisStates[i];
 		}
 
-		FOREACH_I_IN_RANGE(0, it->dPadStates.size())
+		for (unsigned i = 0; it->dPadStates.size(); i++)
 		{
 			it->lastDPadStates[i] = it->dPadStates[i];
 		}
@@ -80,35 +81,35 @@ void InputMgr::OnEvent(const SDL_Event& event)
 	switch (event.type)
 	{
 	case SDL_KEYDOWN:
-		m_keyboardButtonStates[SDLToKB(event.key.keysym.sym)] = true;
+		m_KeyboardButtonStates[SDLToKB(event.key.keysym.sym)] = true;
 		break;
 
 	case SDL_KEYUP:
-		m_keyboardButtonStates[SDLToKB(event.key.keysym.sym)] = false;
+		m_KeyboardButtonStates[SDLToKB(event.key.keysym.sym)] = false;
 		break;
 
 	case SDL_MOUSEBUTTONDOWN:
-		m_mouseButtonStates[SDLToMB(event.button.button)] = true;
+		m_MouseButtonStates[SDLToMB(event.button.button)] = true;
 		break;
 
 	case SDL_MOUSEBUTTONUP:
-		m_mouseButtonStates[SDLToMB(event.button.button)] = false;
+		m_MouseButtonStates[SDLToMB(event.button.button)] = false;
 		break;
 
 	case SDL_MOUSEMOTION:
-		m_mouseDeltaX = (float)event.motion.xrel;
-		m_mouseDeltaY = (float)event.motion.yrel;
+		m_MouseDeltaX = static_cast<float>(event.motion.xrel);
+		m_MouseDeltaY = static_cast<float>(event.motion.yrel);
 		break;
 
 	case SDL_MOUSEWHEEL:
-		if (event.wheel.y > 0.f) m_mouseWheelDelta = 1.f;
-		else if (event.wheel.y < 0.f) m_mouseWheelDelta = 1.f;
-		else m_mouseWheelDelta = 0.f;
+		if (event.wheel.y > 0.f) m_MouseWheelDelta = 1.f;
+		else if (event.wheel.y < 0.f) m_MouseWheelDelta = 1.f;
+		else m_MouseWheelDelta = 0.f;
 		break;
 
 	case SDL_JOYBUTTONDOWN:
 	{
-		FOREACH_IT_IN_LIST(m_gamepads)
+		FOREACH_IT_IN_LIST(m_Gamepads)
 		{
 			if (SDL_JoystickFromInstanceID(event.jhat.which) == it->pHandle)
 			{
@@ -121,7 +122,7 @@ void InputMgr::OnEvent(const SDL_Event& event)
 
 	case SDL_JOYBUTTONUP:
 	{
-		FOREACH_IT_IN_LIST(m_gamepads)
+		FOREACH_IT_IN_LIST(m_Gamepads)
 		{
 			if (SDL_JoystickFromInstanceID(event.jhat.which) == it->pHandle)
 			{
@@ -134,11 +135,11 @@ void InputMgr::OnEvent(const SDL_Event& event)
 
 	case SDL_JOYAXISMOTION:
 	{
-		FOREACH_IT_IN_LIST(m_gamepads)
+		FOREACH_IT_IN_LIST(m_Gamepads)
 		{
 			if (SDL_JoystickFromInstanceID(event.jhat.which) == it->pHandle)
 			{
-				auto state = (float)event.jaxis.value;
+				float state = static_cast<float>(event.jaxis.value);
 				if (state > 0) state /= GAMEPAD_AXIS_MAX_ABS;
 				if (state < 0) state /= GAMEPAD_AXIS_MIN_ABS;
 				if (event.jaxis.axis < it->axisStates.size()) it->axisStates[event.jaxis.axis] = state;
@@ -150,11 +151,11 @@ void InputMgr::OnEvent(const SDL_Event& event)
 
 	case SDL_JOYHATMOTION:
 	{
-		FOREACH_IT_IN_LIST(m_gamepads)
+		FOREACH_IT_IN_LIST(m_Gamepads)
 		{
 			if (SDL_JoystickFromInstanceID(event.jhat.which) == it->pHandle)
 			{
-				TranslateSDLDPadStateToArray(event.jhat.value, &it->dPadStates[event.jhat.hat]);
+				TranslateSDLDPadStateToArray(event.jhat.value, it->dPadStates[event.jhat.hat]);
 				break;
 			}
 		}
@@ -169,12 +170,12 @@ void InputMgr::OnEvent(const SDL_Event& event)
 
 	case SDL_JOYDEVICEREMOVED:
 	{
-		FOREACH_IT_IN_LIST(m_gamepads)
+		FOREACH_IT_IN_LIST(m_Gamepads)
 		{
 			if (SDL_JoystickFromInstanceID(event.jhat.which) == it->pHandle)
 			{
 				SDL_JoystickClose(it->pHandle);
-				m_gamepads.erase(it);
+				m_Gamepads.erase(it);
 				break;
 			}
 		}
@@ -190,7 +191,7 @@ float InputMgr::GetState(const InputObj& inputObj) const
 	{
 		if (inputObj.inputID < KB_COUNT)
 		{
-			return m_keyboardButtonStates[inputObj.inputID] ? 1.f : 0.f;
+			return m_KeyboardButtonStates[inputObj.inputID] ? 1.f : 0.f;
 		}
 	}
 	else if (inputObj.deviceType == DeviceType::Mouse)
@@ -199,49 +200,43 @@ float InputMgr::GetState(const InputObj& inputObj) const
 		{
 			if (inputObj.inputID < MB_COUNT)
 			{
-				return m_mouseButtonStates[inputObj.inputID] ? 1.f : 0.f;
+				return m_MouseButtonStates[inputObj.inputID] ? 1.f : 0.f;
 			}
 		}
 		else if (inputObj.inputType == InputType::Axis)
 		{
-			if (inputObj.inputID == MA_X &&
-				inputObj.direction == Direction::Positive &&
-				m_mouseDeltaX > 0.f) return m_mouseDeltaX;
-			else if (inputObj.inputID == MA_X &&
-				inputObj.direction == Direction::Negative &&
-				m_mouseDeltaX < 0.f) return fabsf(m_mouseDeltaX);
-			else if (inputObj.inputID == MA_Y &&
-				inputObj.direction == Direction::Positive &&
-				m_mouseDeltaY > 0.f) return m_mouseDeltaY;
-			else if (inputObj.inputID == MA_Y &&
-				inputObj.direction == Direction::Negative &&
-				m_mouseDeltaY < 0.f) return fabsf(m_mouseDeltaY);
-			else if (inputObj.inputID == MA_WHEEL &&
-				inputObj.direction == Direction::Positive &&
-				m_mouseWheelDelta > 0.f) return m_mouseWheelDelta;
-			else if (inputObj.inputID == MA_WHEEL &&
-				inputObj.direction == Direction::Negative &&
-				m_mouseWheelDelta < 0.f) return fabsf(m_mouseWheelDelta);
+			if (inputObj.inputID == MA_X && inputObj.axisDir == AxisDir::Positive &&
+				m_MouseDeltaX > 0.f) return m_MouseDeltaX;
+			else if (inputObj.inputID == MA_X && inputObj.axisDir == AxisDir::Negative &&
+				m_MouseDeltaX < 0.f) return abs(m_MouseDeltaX);
+			else if (inputObj.inputID == MA_Y && inputObj.axisDir == AxisDir::Positive &&
+				m_MouseDeltaY > 0.f) return m_MouseDeltaY;
+			else if (inputObj.inputID == MA_Y && inputObj.axisDir == AxisDir::Negative &&
+				m_MouseDeltaY < 0.f) return abs(m_MouseDeltaY);
+			else if (inputObj.inputID == MA_WHEEL && inputObj.axisDir == AxisDir::Positive &&
+				m_MouseWheelDelta > 0.f) return m_MouseWheelDelta;
+			else if (inputObj.inputID == MA_WHEEL && inputObj.axisDir == AxisDir::Negative &&
+				m_MouseWheelDelta < 0.f) return abs(m_MouseWheelDelta);
 		}
 	}
 	else if (inputObj.deviceType == DeviceType::Gamepad)
 	{
-		if (inputObj.deviceID < m_gamepads.size())
+		if (inputObj.deviceID < m_Gamepads.size())
 		{
-			auto it = m_gamepads.begin();
-			for (; it != m_gamepads.end(); it++)
+			auto it = m_Gamepads.begin();
+			for (; it != m_Gamepads.end(); it++)
 			{
 				if (SDL_JoystickInstanceID(it->pHandle) == inputObj.deviceID) break;
 			}
 
-			if (it != m_gamepads.end())
+			if (it != m_Gamepads.end())
 			{
 				if (inputObj.inputType == InputType::Button)
 				{
 					if (inputObj.inputID >= it->buttonStates.size() &&
 						inputObj.inputID < it->buttonStates.size() + it->dPadStates.size() * 4)
 					{
-						auto pov = inputObj.inputID - it->buttonStates.size();
+						unsigned pov = inputObj.inputID - it->buttonStates.size();
 						return it->dPadStates[pov / 4][pov % 4] ? 1.f : 0.f;
 					}
 					else if(inputObj.inputID < it->buttonStates.size())
@@ -253,12 +248,10 @@ float InputMgr::GetState(const InputObj& inputObj) const
 				{
 					if (inputObj.inputID < it->axisStates.size())
 					{
-						auto state = it->axisStates[inputObj.inputID];
+						float state = it->axisStates[inputObj.inputID];
 
-						if (inputObj.direction == Direction::Positive &&
-							state > 0.f) return state;
-						else if (inputObj.direction == Direction::Negative &&
-							state < 0.f) return fabsf(state);
+						if (inputObj.axisDir == AxisDir::Positive && state > 0.f) return state;
+						else if (inputObj.axisDir == AxisDir::Negative && state < 0.f) return abs(state);
 					}
 				}
 			}
@@ -274,7 +267,7 @@ float InputMgr::GetLastState(const InputObj& inputObj) const
 	{
 		if (inputObj.inputID < KB_COUNT)
 		{
-			return m_lastKeyboardButtonStates[inputObj.inputID] ? 1.f : 0.f;
+			return m_LastKeyboardButtonStates[inputObj.inputID] ? 1.f : 0.f;
 		}
 	}
 	else if (inputObj.deviceType == DeviceType::Mouse)
@@ -283,49 +276,43 @@ float InputMgr::GetLastState(const InputObj& inputObj) const
 		{
 			if (inputObj.inputID < MB_COUNT)
 			{
-				return m_lastMouseButtonStates[inputObj.inputID] ? 1.f : 0.f;
+				return m_LastMouseButtonStates[inputObj.inputID] ? 1.f : 0.f;
 			}
 		}
 		else if (inputObj.inputType == InputType::Axis)
 		{
-			if (inputObj.inputID == MA_X &&
-				inputObj.direction == Direction::Positive &&
-				m_lastMouseDeltaX > 0.f) return m_lastMouseDeltaX;
-			else if (inputObj.inputID == MA_X &&
-				inputObj.direction == Direction::Negative &&
-				m_lastMouseDeltaX < 0.f) return fabsf(m_lastMouseDeltaX);
-			else if (inputObj.inputID == MA_Y &&
-				inputObj.direction == Direction::Positive &&
-				m_lastMouseDeltaY > 0.f) return m_lastMouseDeltaY;
-			else if (inputObj.inputID == MA_Y &&
-				inputObj.direction == Direction::Negative &&
-				m_lastMouseDeltaY < 0.f) return fabsf(m_lastMouseDeltaY);
-			else if (inputObj.inputID == MA_WHEEL &&
-				inputObj.direction == Direction::Positive &&
-				m_lastMouseWheelDelta > 0.f) return m_lastMouseWheelDelta;
-			else if (inputObj.inputID == MA_WHEEL &&
-				inputObj.direction == Direction::Negative &&
-				m_lastMouseWheelDelta < 0.f) return fabsf(m_lastMouseWheelDelta);
+			if (inputObj.inputID == MA_X && inputObj.axisDir == AxisDir::Positive &&
+				m_LastMouseDeltaX > 0.f) return m_LastMouseDeltaX;
+			else if (inputObj.inputID == MA_X && inputObj.axisDir == AxisDir::Negative &&
+				m_LastMouseDeltaX < 0.f) return abs(m_LastMouseDeltaX);
+			else if (inputObj.inputID == MA_Y && inputObj.axisDir == AxisDir::Positive &&
+				m_LastMouseDeltaY > 0.f) return m_LastMouseDeltaY;
+			else if (inputObj.inputID == MA_Y && inputObj.axisDir == AxisDir::Negative &&
+				m_LastMouseDeltaY < 0.f) return abs(m_LastMouseDeltaY);
+			else if (inputObj.inputID == MA_WHEEL && inputObj.axisDir == AxisDir::Positive &&
+				m_LastMouseWheelDelta > 0.f) return m_LastMouseWheelDelta;
+			else if (inputObj.inputID == MA_WHEEL && inputObj.axisDir == AxisDir::Negative &&
+				m_LastMouseWheelDelta < 0.f) return abs(m_LastMouseWheelDelta);
 		}
 	}
 	else if (inputObj.deviceType == DeviceType::Gamepad)
 	{
-		if (inputObj.deviceID < m_gamepads.size())
+		if (inputObj.deviceID < m_Gamepads.size())
 		{
-			auto it = m_gamepads.begin();
-			for (; it != m_gamepads.end(); it++)
+			auto it = m_Gamepads.begin();
+			for (; it != m_Gamepads.end(); it++)
 			{
 				if (SDL_JoystickInstanceID(it->pHandle) == inputObj.deviceID) break;
 			}
 
-			if (it != m_gamepads.end())
+			if (it != m_Gamepads.end())
 			{
 				if (inputObj.inputType == InputType::Button)
 				{
 					if (inputObj.inputID >= it->lastButtonStates.size() &&
 						inputObj.inputID < it->lastButtonStates.size() + it->lastDPadStates.size() * 4)
 					{
-						auto pov = inputObj.inputID - it->lastButtonStates.size();
+						unsigned pov = inputObj.inputID - it->lastButtonStates.size();
 						return it->lastDPadStates[pov / 4][pov % 4] ? 1.f : 0.f;
 					}
 					else if (inputObj.inputID < it->lastButtonStates.size())
@@ -337,12 +324,10 @@ float InputMgr::GetLastState(const InputObj& inputObj) const
 				{
 					if (inputObj.inputID < it->lastAxisStates.size())
 					{
-						auto state = it->lastAxisStates[inputObj.inputID];
+						float state = it->lastAxisStates[inputObj.inputID];
 
-						if (inputObj.direction == Direction::Positive &&
-							state > 0.f) return state;
-						else if (inputObj.direction == Direction::Negative &&
-							state < 0.f) return fabsf(state);
+						if (inputObj.axisDir == AxisDir::Positive && state > 0.f) return state;
+						else if (inputObj.axisDir == AxisDir::Negative && state < 0.f) return abs(state);
 					}
 				}
 			}
@@ -352,15 +337,15 @@ float InputMgr::GetLastState(const InputObj& inputObj) const
 	return 0.f;
 }
 
-bool InputMgr::InitGamepad(uint32_t gamepad)
+bool InputMgr::InitGamepad(unsigned gamepad)
 {
 	GamepadData gamepadData;
 	gamepadData.pHandle = SDL_JoystickOpen(gamepad);
 
 	if (gamepadData.pHandle)
 	{
-		const auto buttonCount = SDL_JoystickNumButtons(gamepadData.pHandle);
-		FOREACH_I_IN_RANGE(0, buttonCount)
+		const unsigned buttonCount = SDL_JoystickNumButtons(gamepadData.pHandle);
+		for (unsigned i = 0; i < buttonCount; i++)
 		{
 			gamepadData.buttonStates.push_back(false);
 			gamepadData.lastButtonStates.push_back(false);
@@ -368,8 +353,8 @@ bool InputMgr::InitGamepad(uint32_t gamepad)
 		gamepadData.buttonStates.shrink_to_fit();
 		gamepadData.lastButtonStates.shrink_to_fit();
 
-		const auto axisCount = SDL_JoystickNumAxes(gamepadData.pHandle);
-		FOREACH_I_IN_RANGE(0, axisCount)
+		const unsigned axisCount = SDL_JoystickNumAxes(gamepadData.pHandle);
+		for (unsigned i = 0; i < axisCount; i++)
 		{
 			gamepadData.axisStates.push_back(0.f);
 			gamepadData.lastAxisStates.push_back(0.f);
@@ -377,8 +362,8 @@ bool InputMgr::InitGamepad(uint32_t gamepad)
 		gamepadData.axisStates.shrink_to_fit();
 		gamepadData.lastAxisStates.shrink_to_fit();
 
-		const auto dPadCount = SDL_JoystickNumHats(gamepadData.pHandle);
-		FOREACH_I_IN_RANGE(0, dPadCount)
+		const unsigned dPadCount = SDL_JoystickNumHats(gamepadData.pHandle);
+		for (unsigned i = 0; i < dPadCount; i++)
 		{
 			gamepadData.dPadStates.push_back({ false, false, false, false });
 			gamepadData.lastDPadStates.push_back({ false, false, false, false });
@@ -386,8 +371,7 @@ bool InputMgr::InitGamepad(uint32_t gamepad)
 		gamepadData.dPadStates.shrink_to_fit();
 		gamepadData.lastDPadStates.shrink_to_fit();
 
-		m_gamepads.push_back(gamepadData);
-
+		m_Gamepads.push_back(gamepadData);
 		return true;
 	}
 	else

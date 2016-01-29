@@ -4,5 +4,5 @@
 
 
 
-const float GAMEPAD_AXIS_MAX_ABS = (float)SHRT_MAX;
-const float GAMEPAD_AXIS_MIN_ABS = -(float)SHRT_MIN;
+const float GAMEPAD_AXIS_MAX_ABS = static_cast<float>(SHRT_MAX);
+const float GAMEPAD_AXIS_MIN_ABS = -static_cast<float>(SHRT_MIN);

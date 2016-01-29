@@ -14,24 +14,26 @@ enum class InputType
 	Button,
 	Axis,
 };
-enum class Direction
+enum class AxisDir
 {
 	Positive,
 	Negative,
 	None,
 };
 
-struct InputObj
+class InputObj
 {
+public:
 	DeviceType deviceType;
 	unsigned deviceID;
 	InputType inputType;
 	unsigned inputID;
-	Direction direction;
+	AxisDir axisDir;
 
-	InputObj() = default;
-	InputObj(DeviceType dt, unsigned did, InputType it, unsigned iid, Direction d)
-		: deviceType(dt), deviceID(did), inputType(it), inputID(iid), direction(d) {}
+	InputObj(DeviceType deviceType, unsigned deviceID, InputType inputType, unsigned inputID, AxisDir axisDir)
+		: deviceType(deviceType), deviceID(deviceID), inputType(inputType), inputID(inputID), axisDir(axisDir) {}
 };
+
+
 
 #endif
